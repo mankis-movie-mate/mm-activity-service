@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 
+
 class MongoDB:
     def __init__(self, db_name: str, host: str = 'localhost', port: int = 27017, username: str = None, password: str = None):
         if username and password:

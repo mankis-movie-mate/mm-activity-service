@@ -1,9 +1,8 @@
-import logging
 from flask import Flask
 from flask_restx import Api
-from src.config.logger import LoggerConfig
-from src.config.config import Config
-from src.config.db import MongoDB
+from mm_activity_service.config.logger import LoggerConfig
+from mm_activity_service.config.config import Config
+from mm_activity_service.config.db import MongoDB
 
 config = Config()
 
@@ -21,14 +20,14 @@ def create_app() -> Flask:
 
 def init_swagger(app: Flask):
     api = Api(
-        app, 
-        version="1.0", 
+        app,
+        version="1.0",
         title="mm-activity-service",
-        prefix=config.BASE_URL, 
-        doc="/swagger-ui"
+        prefix=config.BASE_URL,
+        doc=f"{config.BASE_URL}/swagger-ui"
     )
 
-    from .controller.hello_controller import ns as hello_namespace
+    from controller.hello_controller import ns as hello_namespace
     api.add_namespace(hello_namespace)
 
 
