@@ -1,20 +1,19 @@
 import logging
+import sys
 
 
-class LoggerConfig:
-    LOG_FORMAT = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+def setup_logger(log_level: str = "INFO"):
+    LOG_FORMAT = "[%(asctime)s] %(levelname)s in %(name)s: %(message)s"
 
-    @staticmethod
-    def init_logger(app, log_level: str = "INFO"):
-        if app.logger.hasHandlers():
-            app.logger.handlers.clear()
+    logger = logging.getLogger()
+    if logger.hasHandlers():
+        return
 
-        log_formatter = logging.Formatter(LoggerConfig.LOG_FORMAT)
+    logger.setLevel(log_level)
+    log_formatter = logging.Formatter(LOG_FORMAT)
 
-        app.logger.setLevel(log_level)
-
-        # Logs to stdout
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(log_level)
-        console_handler.setFormatter(log_formatter)
-        app.logger.addHandler(console_handler)
+    # Logs to stdout
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(log_level)
+    console_handler.setFormatter(log_formatter)
+    logger.addHandler(console_handler)

@@ -1,0 +1,53 @@
+import logging
+from mm_activity_service.preference.preference import UserPreference
+from flask_restx import Namespace, Resource, fields
+from flask import Response
+
+ns = Namespace('preferences', description='User Preferences operations')
+logger = logging.getLogger(__name__)
+
+
+preference_dto = ns.model('UserPreference', {
+    'username': fields.String(required=True, description='The username'),
+    'genres_id': fields.List(fields.String, description='List of genre IDs')
+})
+
+
+@ns.route('/<string:username>')
+class PreferenceByUsernameResource(Resource):
+    def get(self, username: str) -> Response:
+        logger.info(f'Getting user preferences for {username}')
+        preferences = UserPreference.objects(username=username).first()
+        if preferences:
+            return Response(preferences.to_json(), status=200, mimetype='application/json')
+        else:
+            return Response({'message': 'Username not found'}, status=200, mimetype='application/json')
+
+
+@ns.route('/')
+class PreferenceResource(Resource):
+    @ns.expect(preference_dto)
+    def post(self) -> Response:
+        data = ns.payload
+        username = data.get('username')
+        genres_id = data.get('genres_id')
+        logger.info(f"Saving user preferences for {username} with genres {genres_id}")
+
+        user_pref = UserPreference(username=username, genres_id=genres_id)
+        user_pref.save()
+        return Response(user_pref.to_json(), status=201, mimetype='application/json')
+
+    @ns.expect(preference_dto)
+    def patch(self) -> Response:
+        data = ns.payload
+        username = data.get('username')
+        genres_id = data.get('genres_id')
+        logger.info(f"Updating user preferences for {username} with genres {genres_id}")
+
+        user_pref = UserPreference.objects(username=username).first()
+        if user_pref:
+            user_pref.genres_id = genres_id
+            user_pref.save()
+            return Response(user_pref.to_json(), status=200, mimetype='application/json')
+        else:
+            return Response({'message': 'Username not found'}, status=200, mimetype='application/json')

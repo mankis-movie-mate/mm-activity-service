@@ -1,29 +1,37 @@
-from pymongo import MongoClient
+import logging
+
+from mongoengine import connect, disconnect
+from mongoengine.connection import get_connection
 from pymongo.errors import ConnectionFailure
 
 
-class MongoDB:
-    def __init__(self, db_name: str, host: str = 'localhost', port: int = 27017, username: str = None, password: str = None):
-        if username and password:
-            uri = f"mongodb://{username}:{password}@{host}:{port}/{db_name}"
-        else:
-            uri = f"mongodb://{host}:{port}/{db_name}"
+class MongoDBConnector:
+    def __init__(self, db_name: str, host: str, port: int, username: str = None, password: str = None):
+        self.db_name = db_name
+        self.host = host
+        self.port = port
 
-        self.client = MongoClient(uri)
-        self.db = self.client[db_name]
+        connect_params = {
+            'db': self.db_name,
+            'host': self.host,
+            'port': self.port,
+        }
+        if username and password:
+            connect_params['username'] = username
+            connect_params['password'] = password
+            self.username = username
+            self.password = password
+
+        connect(**connect_params)
 
 
     def test_connection(self):
         try:
-            self.client.get_database(self.db.name).command("ping")
+            conn = get_connection()
+            conn.admin.command('ping')
             return True
         except ConnectionFailure:
             return False
 
-
-    def get_collection(self, name: str):
-        return self.db[name]
-
-
     def close_connection(self):
-        self.client.close()
+        disconnect()

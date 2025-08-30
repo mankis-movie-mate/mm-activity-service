@@ -1,8 +1,8 @@
 from mm_activity_service.config.config import Config
-from app import create_app
+from mm_activity_service.app import create_app
 
 
-if __name__ == "__main__":
+def run():
     app = create_app()
     config = Config()
 
