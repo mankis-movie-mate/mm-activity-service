@@ -3,8 +3,8 @@ from datetime import datetime
 
 
 class Watchlist(Document):
-    name = StringField(required=True, description='The name of the watchlist')
-    username = StringField(required=True, description='The username of the watchlist owner')
+    name = StringField(required=True)
+    username = StringField(required=True)
     movies_id = ListField(StringField())
     updated_date = DateTimeField(default=datetime.now)
 
