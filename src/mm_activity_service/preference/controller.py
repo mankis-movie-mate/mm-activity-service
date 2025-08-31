@@ -1,4 +1,5 @@
 import logging
+from mm_activity_service.utils import data_response, message_response
 from mm_activity_service.preference.preference import UserPreference
 from flask_restx import Namespace, Resource, fields
 from flask import Response
@@ -19,9 +20,9 @@ class PreferenceByUsernameResource(Resource):
         logger.info(f'Getting user preferences for {username}')
         preferences = UserPreference.objects(username=username).first()
         if preferences:
-            return Response(preferences.to_json(), status=200, mimetype='application/json')
-        else:
-            return Response({'message': 'Username not found'}, status=200, mimetype='application/json')
+            return data_response(preferences.to_json())
+
+        return message_response(f"Username {username} not found", 404)
 
 
 @ns.route('/')
@@ -33,9 +34,15 @@ class PreferenceResource(Resource):
         genres_id = data.get('genres_id')
         logger.info(f"Saving user preferences for {username} with genres {genres_id}")
 
+        if not username:
+            return message_response("Username is required", 400)
+
+        if UserPreference.objects(username=username).first():
+            return message_response(f"Preferences for this username {username} already exist", 400)
+
         user_pref = UserPreference(username=username, genres_id=genres_id)
         user_pref.save()
-        return Response(user_pref.to_json(), status=201, mimetype='application/json')
+        return data_response(user_pref.to_json(), 201)
 
     @ns.expect(preference_dto)
     def patch(self) -> Response:
@@ -48,6 +55,6 @@ class PreferenceResource(Resource):
         if user_pref:
             user_pref.genres_id = genres_id
             user_pref.save()
-            return Response(user_pref.to_json(), status=200, mimetype='application/json')
-        else:
-            return Response({'message': 'Username not found'}, status=200, mimetype='application/json')
+            return data_response(user_pref.to_json())
+
+        return message_response(f"Username {username} not found", 404)

@@ -6,6 +6,7 @@ from mm_activity_service.config.logger import setup_logger
 from mm_activity_service.config.config import Config
 from mm_activity_service.config.db import MongoDBConnector
 from mm_activity_service.preference.controller import ns as preference_ns
+from mm_activity_service.watchlist.controller import ns as watchlist_ns
 
 config = Config()
 logger = logging.getLogger(__name__)
@@ -27,11 +28,12 @@ def init_endpoints(app: Flask):
         api_blueprint,
         version="1.0",
         title="mm-activity-service",
-        doc=f"{config.BASE_URL}/docs/swagger-ui"
+        doc="/docs/swagger-ui"
     )
     app.register_blueprint(api_blueprint)
 
     api.add_namespace(preference_ns)
+    api.add_namespace(watchlist_ns)
 
 
 def init_db():
