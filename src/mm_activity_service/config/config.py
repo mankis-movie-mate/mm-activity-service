@@ -9,7 +9,7 @@ class Config:
 
     def __init__(self):
         self.ENV = os.getenv(f"{self._ENV_PREFIX}ENV")
-        self.DEBUG = os.getenv(f"{self._ENV_PREFIX}DEBUG")
+        self.DEBUG = os.getenv(f"{self._ENV_PREFIX}DEBUG") == 'true'
         self.PORT = os.getenv(f"{self._ENV_PREFIX}PORT")
         self.HOST = os.getenv(f"{self._ENV_PREFIX}HOST")
         self.BASE_URL = os.getenv(f"{self._ENV_PREFIX}BASE_URL")

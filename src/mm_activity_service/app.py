@@ -1,11 +1,11 @@
 import logging
-import time
-import requests
+import atexit
 
 from flask import Flask, Blueprint, jsonify
 from flask_restx import Api
 from mm_activity_service.config.logger import setup_logger
 from mm_activity_service.config.config import Config
+from mm_activity_service.config.consul import Consul
 from mm_activity_service.config.db import MongoDBConnector
 from mm_activity_service.preference.controller import ns as preference_ns
 from mm_activity_service.watchlist.controller import ns as watchlist_ns
@@ -15,23 +15,10 @@ config = Config()
 logger = logging.getLogger(__name__)
 
 
-def register_consul() -> None:
-    """Register service in Consul for service discovery."""
-    consul_url = f"http://{config.DS_HOST}:{config.DS_PORT}/v1/agent/service/register"
-    timestamp = int(time.time())
-
-    service_definition = {
-        "Name": "mm-activity-service",
-        "ID": f"mm-activity-service-{timestamp}",
-        "Address": config.HOST,
-        "Port": int(config.PORT),
-        "Check": {
-            "HTTP": f"http://{config.HOST}:{config.PORT}/health",
-            "Interval": "10s"
-        }
-    }
-    requests.put(consul_url, json=service_definition)
-    logger.info(f"Registered service {service_definition['ID']} with Consul at {consul_url}")
+def register_consul_service() -> None:
+    consul = Consul(logger)
+    consul.register_service()
+    atexit.register(consul.deregister_service)
 
 
 def create_app() -> Flask:
@@ -41,6 +28,7 @@ def create_app() -> Flask:
     app.env = config.ENV
     init_db()
     init_endpoints(app)
+    register_consul_service()
     return app
 
 
