@@ -19,5 +19,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t "${{ secrets.DOCKERHUB_USER }}/mm-movie-service:latest" .
-          docker push "${{ secrets.DOCKERHUB_USER }}/mm-movie-service:latest"
+          docker build -t "${{ secrets.DOCKERHUB_USER }}/mm-activity-service:latest" .
+          docker push "${{ secrets.DOCKERHUB_USER }}/mm-activity-service:latest"
