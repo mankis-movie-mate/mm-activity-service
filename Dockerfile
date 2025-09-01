@@ -6,8 +6,9 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_NO_INTERACTION=1 \
     PYTHONPATH=/app/src
 
+# Install system dependencies
 RUN apt-get update && \
-    apt-get install -y curl build-essential && \
+    apt-get install -y --no-install-recommends curl build-essential && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -17,10 +18,18 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 
 WORKDIR /app
 
+# Copy only requirements first for better cache usage
 COPY pyproject.toml poetry.lock* ./
+
+# Install dependencies
+RUN poetry install --no-interaction --no-ansi --no-root
+
+# Remove build-essential to reduce image size
+RUN apt-get purge -y --auto-remove build-essential && rm -rf /var/lib/apt/lists/*
+
+# Copy source code
 COPY src ./src
 
-RUN poetry install --no-interaction --no-ansi
 
 EXPOSE 5000
 
