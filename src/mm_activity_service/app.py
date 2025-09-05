@@ -52,7 +52,7 @@ def init_endpoints(app: Flask):
 
     @app.route('/docs/swagger.json')
     def swagger_json_alias():
-        return redirect('/api/swagger.json')
+        return app.view_functions['api.spec']()
 
 
 def init_db():
