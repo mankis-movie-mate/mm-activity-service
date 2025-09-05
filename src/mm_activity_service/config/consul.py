@@ -12,7 +12,7 @@ class Consul:
         self.base_url = config.BASE_URL
         self.ds_host = config.DS_HOST
         self.ds_port = config.DS_PORT
-        self.service_host = config.HOST
+        self.service_host = config.LISTEN_HOST
         self.service_port = config.PORT
         self.traefik_tags = config.LB_TAGS
         self.service_name = "mm-activity-service"
@@ -29,6 +29,7 @@ class Consul:
             tags = [line.strip() for line in tags_raw.splitlines() if line.strip()]
         else:
             tags = []
+
         service_definition = {
             "Name": self.service_name,
             "ID": self.service_id,

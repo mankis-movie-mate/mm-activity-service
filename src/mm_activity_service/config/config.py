@@ -13,7 +13,8 @@ class Config:
         self.ENV = os.getenv(f"{self._ENV_PREFIX}ENV")
         self.DEBUG = os.getenv(f"{self._ENV_PREFIX}DEBUG") == 'true'
         self.PORT = os.getenv(f"{self._ENV_PREFIX}PORT")
-        self.HOST = os.getenv(f"{self._ENV_PREFIX}HOST") if self.ENV != "prod" else socket.gethostbyname(socket.gethostname())
+        self.HOST = os.getenv(f"{self._ENV_PREFIX}APP_BIND_HOST", "0.0.0.0")
+        self.LISTEN_HOST = os.getenv(f"{self._ENV_PREFIX}LISTEN_HOST", "127.0.0.1")
         self.BASE_URL = os.getenv(f"{self._ENV_PREFIX}BASE_URL")
         self.DB_NAME = os.getenv(f"{self._ENV_PREFIX}DB_NAME")
         self.DB_HOST = os.getenv(f"{self._ENV_PREFIX}DB_HOST")
