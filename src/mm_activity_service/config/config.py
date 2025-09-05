@@ -23,3 +23,4 @@ class Config:
         self.DS_HOST = os.getenv(f"{self._MM_PREFIX}DISCOVERY_SERVER_HOST")
         self.DS_PORT = os.getenv(f"{self._MM_PREFIX}DISCOVERY_SERVER_PORT")
         self.LOG_LEVEL = os.getenv(f"{self._ENV_PREFIX}LOG_LEVEL")
+        self.LB_TAGS = os.getenv(f"{self._ENV_PREFIX}LB_TAGS")
