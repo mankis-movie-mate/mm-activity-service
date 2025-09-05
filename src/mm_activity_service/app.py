@@ -52,10 +52,7 @@ def init_endpoints(app: Flask):
 
     @app.route('/docs/swagger.json')
     def swagger_json_alias():
-        print("DEBUG ENDPOINTS:", app.view_functions.keys())
-        for key in app.view_functions:
-            if key.endswith('.spec'):
-                return app.view_functions[key]()
+        return app.view_functions['api.specs']()
 
 
 def init_db():
