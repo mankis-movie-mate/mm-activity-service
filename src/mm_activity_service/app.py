@@ -1,7 +1,7 @@
 import logging
 import atexit
 
-from flask import Flask, Blueprint, jsonify
+from flask import Flask, Blueprint, jsonify, redirect
 from flask_restx import Api
 from mm_activity_service.config.logger import setup_logger
 from mm_activity_service.config.config import Config
@@ -49,6 +49,10 @@ def init_endpoints(app: Flask):
     @app.route('/health')
     def health_check():
         return jsonify({"status": "ok"}), 200
+
+    @app.route('/docs/swagger.json')
+    def swagger_json_alias():
+        return redirect('/api/swagger.json')
 
 
 def init_db():
