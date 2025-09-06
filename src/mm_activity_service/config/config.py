@@ -17,6 +17,7 @@ class Config:
         self.LISTEN_HOST = os.getenv(f"{self._ENV_PREFIX}LISTEN_HOST", "127.0.0.1")
         self.BASE_URL = os.getenv(f"{self._ENV_PREFIX}BASE_URL")
         self.DB_NAME = os.getenv(f"{self._ENV_PREFIX}DB_NAME")
+        self.ALLOWED_ORIGINS = os.getenv(f"{self._ENV_PREFIX}ALLOWED_ORIGINS", "*")
         self.DB_HOST = os.getenv(f"{self._ENV_PREFIX}DB_HOST")
         self.DB_PORT = os.getenv(f"{self._ENV_PREFIX}DB_PORT")
         self.DB_USER = os.getenv(f"{self._ENV_PREFIX}DB_USER")

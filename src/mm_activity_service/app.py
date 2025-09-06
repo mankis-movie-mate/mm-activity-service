@@ -10,6 +10,7 @@ from mm_activity_service.config.db import MongoDBConnector
 from mm_activity_service.preference.controller import ns as preference_ns
 from mm_activity_service.watchlist.controller import ns as watchlist_ns
 from mm_activity_service.rating.controller import ns as ratings_ns
+from mm_activity_service.config.cors import configure_cors
 
 config = Config()
 logger = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ def create_app() -> Flask:
     init_db()
     init_endpoints(app)
     register_consul_service()
+    configure_cors(app, config)
     return app
 
 
