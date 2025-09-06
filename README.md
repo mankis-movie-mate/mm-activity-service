@@ -10,7 +10,7 @@ Environment variables are defined in `.env.example`.
 
 ## 📄 API Documentation
 
-- **Swagger UI:** `${config.BASE_URL}/docs/swagger-ui`
+- **Swagger UI:** `${config.BASE_URL}/docs/swagger`
 
 _Replace `${config.BASE_URL}` with deployment context (e.g. `/api/user`)._
 

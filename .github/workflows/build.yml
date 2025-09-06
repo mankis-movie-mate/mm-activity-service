@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev/release-test
+      - dev/running-test
 
 jobs:
 
