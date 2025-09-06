@@ -8,7 +8,7 @@ def configure_cors(app: Flask, config: Config):
     if not base_path.startswith("/"):
         base_path = "/" + base_path
     if not base_path.endswith("/"):
-        base_path += ""
+        base_path += "/"
 
     cors_path = rf"{base_path}*"  # Regex-compatible path: /api/*
 
