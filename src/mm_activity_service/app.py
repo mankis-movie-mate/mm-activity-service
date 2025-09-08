@@ -1,7 +1,7 @@
 import logging
 import atexit
 
-from flask import Flask, Blueprint, jsonify
+from flask import Flask, Blueprint, jsonify, redirect
 from flask_restx import Api
 from mm_activity_service.config.logger import setup_logger
 from mm_activity_service.config.config import Config
@@ -10,6 +10,7 @@ from mm_activity_service.config.db import MongoDBConnector
 from mm_activity_service.preference.controller import ns as preference_ns
 from mm_activity_service.watchlist.controller import ns as watchlist_ns
 from mm_activity_service.rating.controller import ns as ratings_ns
+from mm_activity_service.config.cors import configure_cors
 
 config = Config()
 logger = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ def create_app() -> Flask:
     init_db()
     init_endpoints(app)
     register_consul_service()
+    configure_cors(app, config)
     return app
 
 
@@ -49,6 +51,10 @@ def init_endpoints(app: Flask):
     @app.route('/health')
     def health_check():
         return jsonify({"status": "ok"}), 200
+
+    @app.route('/docs/swagger.json')
+    def swagger_json_alias():
+        return app.view_functions['api.specs']()
 
 
 def init_db():

@@ -13,9 +13,11 @@ class Config:
         self.ENV = os.getenv(f"{self._ENV_PREFIX}ENV")
         self.DEBUG = os.getenv(f"{self._ENV_PREFIX}DEBUG") == 'true'
         self.PORT = os.getenv(f"{self._ENV_PREFIX}PORT")
-        self.HOST = os.getenv(f"{self._ENV_PREFIX}HOST") if self.ENV != "prod" else socket.gethostbyname(socket.gethostname())
+        self.HOST = os.getenv(f"{self._ENV_PREFIX}APP_BIND_HOST", "0.0.0.0")
+        self.LISTEN_HOST = os.getenv(f"{self._ENV_PREFIX}LISTEN_HOST", "127.0.0.1")
         self.BASE_URL = os.getenv(f"{self._ENV_PREFIX}BASE_URL")
         self.DB_NAME = os.getenv(f"{self._ENV_PREFIX}DB_NAME")
+        self.ALLOWED_ORIGINS = os.getenv(f"{self._ENV_PREFIX}ALLOWED_ORIGINS", "*")
         self.DB_HOST = os.getenv(f"{self._ENV_PREFIX}DB_HOST")
         self.DB_PORT = os.getenv(f"{self._ENV_PREFIX}DB_PORT")
         self.DB_USER = os.getenv(f"{self._ENV_PREFIX}DB_USER")
@@ -23,3 +25,4 @@ class Config:
         self.DS_HOST = os.getenv(f"{self._MM_PREFIX}DISCOVERY_SERVER_HOST")
         self.DS_PORT = os.getenv(f"{self._MM_PREFIX}DISCOVERY_SERVER_PORT")
         self.LOG_LEVEL = os.getenv(f"{self._ENV_PREFIX}LOG_LEVEL")
+        self.LB_TAGS = os.getenv(f"{self._ENV_PREFIX}LB_TAGS")

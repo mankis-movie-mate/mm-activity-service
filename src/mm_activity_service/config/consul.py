@@ -12,8 +12,9 @@ class Consul:
         self.base_url = config.BASE_URL
         self.ds_host = config.DS_HOST
         self.ds_port = config.DS_PORT
-        self.service_host = config.HOST
+        self.service_host = config.LISTEN_HOST
         self.service_port = config.PORT
+        self.traefik_tags = config.LB_TAGS
         self.service_name = "mm-activity-service"
         self.service_id = f"{self.service_name}-{int(time.time())}"
         self.health_check_url = f"http://{self.service_host}:{self.service_port}/health"
@@ -22,20 +23,19 @@ class Consul:
     def register_service(self) -> None:
         """Register service in Consul for service discovery."""
         consul_url = f"http://{self.ds_host}:{self.ds_port}/v1/agent/service/register"
+        tags_raw = self.traefik_tags.strip()
+        if tags_raw:
+            # Split by lines, trim whitespace, ignore empty lines
+            tags = [line.strip() for line in tags_raw.splitlines() if line.strip()]
+        else:
+            tags = []
 
         service_definition = {
             "Name": self.service_name,
             "ID": self.service_id,
             "Address": self.service_host,
             "Port": int(self.service_port),
-            "Tags": [
-                "traefik.enable=true",
-                "traefik.http.routers.mm-activity-service.rule=PathPrefix(`/mm-activity-service`)",
-                "traefik.http.routers.mm-activity-service.middlewares=mm-rewrite@consulcatalog",
-                "traefik.http.middlewares.mm-rewrite.replacepathregex.regex=^/mm-activity-service(.*)",
-                f"traefik.http.middlewares.mm-rewrite.replacepathregex.replacement=/{self.base_url}$1",
-                "traefik.http.services.mm-activity-service.loadbalancer.server.port=5000"
-            ],
+            "Tags": tags,
             "Check": {
                 "HTTP": self.health_check_url,
                 "Interval": self.check_interval
