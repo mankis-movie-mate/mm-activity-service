@@ -26,6 +26,7 @@ class Consul:
         consul_url = f"http://{self.ds_host}:{self.ds_port}/v1/agent/service/register"
         tags_raw = self.traefik_tags.strip()
         if tags_raw:
+
             tags = [line.strip() for line in tags_raw.splitlines() if line.strip()]
         else:
             tags = []
