@@ -42,11 +42,23 @@ class Consul:
             }
         }
 
-        response = requests.put(consul_url, json=service_definition)
-        if response.status_code == 200:
-            self.logger.info(f"Registered service {self.service_id} with Consul at {consul_url}")
-        else:
-            self.logger.info(f"Failed to register service {self.service_id} with Consul. Status code: {response.status_code}, Response: {response.text}")
+        attempt = 0
+        is_successful = False
+
+        while not is_successful:
+            attempt += 1
+            try:
+                response = requests.put(consul_url, json=service_definition)
+                if response.status_code == 200:
+                    self.logger.info(f"Successfully registered service {self.service_id} with Consul.")
+                    is_successful = True
+                else:
+                    self.logger.info(f"Attempt {attempt}: Failed to register service {self.service_id} with Consul. Status code: {response.status_code}, Response: {response.text}")
+            except requests.RequestException as e:
+                self.logger.info(f"Attempt {attempt}: Failed to register service {self.service_id} with Consul: {e}")
+
+            if not is_successful:
+                time.sleep(2)
 
     def deregister_service(self) -> None:
         """Deregister service from Consul."""

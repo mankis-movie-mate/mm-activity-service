@@ -1,7 +1,8 @@
 import logging
-import atexit
+import signal
+import sys
 
-from flask import Flask, Blueprint, jsonify, redirect
+from flask import Flask, Blueprint, jsonify
 from flask_restx import Api
 from mm_activity_service.config.logger import setup_logger
 from mm_activity_service.config.config import Config
@@ -19,7 +20,13 @@ logger = logging.getLogger(__name__)
 def register_consul_service() -> None:
     consul = Consul(logger)
     consul.register_service()
-    atexit.register(consul.deregister_service)
+
+    def shutdown_handler(signum, frame):
+        consul.deregister_service()
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, shutdown_handler)
+    signal.signal(signal.SIGTERM, shutdown_handler)
 
 
 def create_app() -> Flask:
