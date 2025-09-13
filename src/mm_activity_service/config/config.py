@@ -42,4 +42,6 @@ class Config:
         self.DAPR_HTTP_PORT = int(os.getenv(f"{self._DAPR_PREFIX}HTTP_PORT", "3500"))
         self.DAPR_PUBSUB_NAME = os.getenv(f"{self._DAPR_PREFIX}PUBSUB_NAME", "messagebus")
         self.DAPR_PUBSUB_TOPIC = os.getenv(f"{self._DAPR_PREFIX}PUBSUB_TOPIC", "user-activity")
+        self.DAPR_RATED_TOPIC = os.getenv(f"{self._DAPR_PREFIX}RATED_TOPIC", "user-rated")
+        self.DAPR_WATCHLISTED_TOPIC = os.getenv(f"{self._DAPR_PREFIX}WATCHLISTED_TOPIC", "user-watchlisted")
         self.DAPR_PUBSUB_RAWPAYLOAD = os.getenv(f"{self._DAPR_PREFIX}PUBSUB_RAWPAYLOAD", "true").lower() == "true"
