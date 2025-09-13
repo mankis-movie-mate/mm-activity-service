@@ -12,10 +12,10 @@ from mm_activity_service.preference.controller import ns as preference_ns
 from mm_activity_service.watchlist.controller import ns as watchlist_ns
 from mm_activity_service.rating.controller import ns as ratings_ns
 from mm_activity_service.config.cors import configure_cors
+from mm_activity_service.events.publisher import get_publisher
 
 config = Config()
 logger = logging.getLogger(__name__)
-
 
 def register_consul_service() -> None:
     consul = Consul(logger)
@@ -29,15 +29,17 @@ def register_consul_service() -> None:
     signal.signal(signal.SIGTERM, shutdown_handler)
 
 
+
 def create_app() -> Flask:
     app = Flask(__name__)
     setup_logger(config.LOG_LEVEL)
-
+    get_publisher()
     app.env = config.ENV
     init_db()
     init_endpoints(app)
     register_consul_service()
     configure_cors(app, config)
+
     return app
 
 

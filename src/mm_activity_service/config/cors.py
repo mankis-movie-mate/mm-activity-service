@@ -12,7 +12,6 @@ def configure_cors(app: Flask, config: Config):
 
     cors_path = rf"{base_path}*"  # Regex-compatible path: /api/*
     allowed_origins_splitted = [origin.strip() for origin in config.ALLOWED_ORIGINS.split(",") if origin.strip()]
-
     print(f"🔗 CORS: Exposing {cors_path} to origins = {config.ALLOWED_ORIGINS}")
 
     CORS(

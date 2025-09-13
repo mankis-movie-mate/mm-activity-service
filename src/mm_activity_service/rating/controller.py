@@ -6,6 +6,8 @@ from mm_activity_service.rating.rating import Rating
 from flask_restx import Namespace, Resource, fields
 from flask import Response, request
 import json
+from mm_activity_service.events.publisher import get_publisher
+from mm_activity_service.events.models import RatedEvent
 
 ns = Namespace('rating', description='Rating related operations')
 logger = logging.getLogger(__name__)
@@ -40,6 +42,8 @@ class RatingResource(Resource):
 
         logger.info(f"Creating rating for movie '{movie_id}' by user '{username}' with rate {rate}, review '{review}', and tags {tags}")
         rating = Rating(username=username, movie_id=movie_id, rate=rate, review_text=review, tags=tags, timestamp=datetime.now(), update_date=datetime.now())
+        event = RatedEvent(userId=username, movieId=movie_id, rating=rate)
+        get_publisher().publish(event)
         rating.save()
         return data_response(rating.to_json(), 201)
 
