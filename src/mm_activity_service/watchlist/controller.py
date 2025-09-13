@@ -6,8 +6,7 @@ from flask_restx import Namespace, Resource, fields
 from flask import Response, request
 import json
 from mm_activity_service.events.publisher import get_publisher
-from mm_activity_service.config.config import Config
-from mm_activity_service.events.models import ActivityEvent, Action
+from mm_activity_service.events.models import WatchlistedEvent, Action
 
 ns = Namespace('watchlist', description='Watchlist related operations')
 logger = logging.getLogger(__name__)
@@ -93,20 +92,22 @@ class WatchlistByIdResource(Resource):
 
         watchlist = Watchlist.objects(id=watchlist_id).first()
         if watchlist:
+            old_movies = set(watchlist.movies_id or [])
+            new_movies = set(movies_id)
+            added_movies = new_movies - old_movies   # Only publish for these
+
             watchlist.name = name
             watchlist.movies_id = movies_id
             watchlist.updated_date = datetime.now()
             watchlist.save()
-            if movies_id:
-                for movie_id in movies_id:
-                    event = ActivityEvent(
-                        userId=username,
-                        movieId=movie_id,
-                        action=Action.WATCHLISTED,
-                        timestamp=int(datetime.now().timestamp() * 1000)
-                    )
+
+            # Publish WATCHLISTED only for newly added movies
+            if added_movies:
+                for movie_id in added_movies:
+                    event = WatchlistedEvent(userId=username, movieId=movie_id)
                     get_publisher().publish(event)
-                    return data_response(watchlist.to_json())
+
+            return data_response(watchlist.to_json())
         else:
             return message_response(f"Watchlist with ID {watchlist_id} not found", 404)
 
