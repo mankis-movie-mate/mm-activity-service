@@ -11,7 +11,7 @@ from mm_activity_service.events.models import ActivityEvent, Action
 
 ns = Namespace('watchlist', description='Watchlist related operations')
 logger = logging.getLogger(__name__)
-publisher = get_publisher(Config())
+
 
 watchlist_dto = ns.model('Watchlist', {
     'name': fields.String(required=True, description='The name of the watchlist'),
@@ -105,7 +105,7 @@ class WatchlistByIdResource(Resource):
                         action=Action.WATCHLISTED,
                         timestamp=int(datetime.now().timestamp() * 1000)
                     )
-                    publisher.publish(event)
+                    get_publisher().publish(event)
                     return data_response(watchlist.to_json())
         else:
             return message_response(f"Watchlist with ID {watchlist_id} not found", 404)
