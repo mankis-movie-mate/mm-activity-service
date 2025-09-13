@@ -5,10 +5,13 @@ from mm_activity_service.watchlist.watchlist import Watchlist
 from flask_restx import Namespace, Resource, fields
 from flask import Response, request
 import json
+from mm_activity_service.events.publisher import get_publisher
+from mm_activity_service.config.config import Config
+from mm_activity_service.events.models import ActivityEvent, Action
 
 ns = Namespace('watchlist', description='Watchlist related operations')
 logger = logging.getLogger(__name__)
-
+publisher = get_publisher(Config())
 
 watchlist_dto = ns.model('Watchlist', {
     'name': fields.String(required=True, description='The name of the watchlist'),
@@ -84,6 +87,7 @@ class WatchlistByIdResource(Resource):
     def patch(self, watchlist_id: str) -> Response:
         data = ns.payload
         name = data.get('name')
+        username = data.get('username')
         movies_id = data.get('movies_id', [])
         logger.info(f"Updating watchlist ID {watchlist_id} with name '{name}' and movies {movies_id}")
 
@@ -93,7 +97,16 @@ class WatchlistByIdResource(Resource):
             watchlist.movies_id = movies_id
             watchlist.updated_date = datetime.now()
             watchlist.save()
-            return data_response(watchlist.to_json())
+            if movies_id:
+                for movie_id in movies_id:
+                    event = ActivityEvent(
+                        userId=username,
+                        movieId=movie_id,
+                        action=Action.WATCHLISTED,
+                        timestamp=int(datetime.now().timestamp() * 1000)
+                    )
+                    publisher.publish(event)
+                    return data_response(watchlist.to_json())
         else:
             return message_response(f"Watchlist with ID {watchlist_id} not found", 404)
 
