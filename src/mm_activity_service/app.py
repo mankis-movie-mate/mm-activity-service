@@ -15,11 +15,11 @@ from mm_activity_service.config.cors import configure_cors
 config = Config()
 logger = logging.getLogger(__name__)
 
-
 def register_consul_service() -> None:
     consul = Consul(logger)
     consul.register_service()
     atexit.register(consul.deregister_service)
+
 
 
 def create_app() -> Flask:
@@ -31,6 +31,7 @@ def create_app() -> Flask:
     init_endpoints(app)
     register_consul_service()
     configure_cors(app, config)
+
     return app
 
 
